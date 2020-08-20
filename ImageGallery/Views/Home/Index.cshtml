@@ -1,0 +1,46 @@
+﻿@{
+    ViewBag.Title = "Main Gallery";
+}
+
+@section scripts 
+{
+<script type="text/javascript">
+    ImageGallery.Register("GalleryMainPage", (function () {
+        var _galleryMainPage = {};
+
+        _galleryMainPage.Initialize = function() {
+
+        }
+
+        angular.module('ImageGallery', []).controller('ImageGalleryController', function ($scope, $http) {
+            $http.get('/api/imagegallery/getalluploadedimages').success(function (data) {
+
+                $scope.galleryimages = data;
+            });
+
+            $scope.getImageDetails = function (galleryimage, $event) {
+                $.ajax({
+                    type: "POST",
+                    url: "/api/imagegallery/imagedetailsredirect",
+                    dataType: "json",
+                    data: { filename : galleryimage.FileName}
+                })
+                .done(function (message, data) {
+                    if (message == "more_details")
+                    {
+                        ImageGallery.Redirect("/gallery/imagedetails");
+                    }
+                });
+            }
+        });
+
+        return _galleryMainPage;
+    })());
+</script>
+}
+
+<div data-ng-app="ImageGallery" data-ng-controller="ImageGalleryController" class="container-gallery">
+    <div data-ng-repeat="galleryimage in galleryimages" class="container-gallery_image">
+        <a ng-click="getImageDetails(galleryimage)"><img src="/Uploads/{{ galleryimage.FileName }}" class="js-gallery_image" /></a>
+    </div>
+</div>

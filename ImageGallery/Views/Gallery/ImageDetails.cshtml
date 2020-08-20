@@ -1,0 +1,56 @@
+﻿
+@{
+    ViewBag.Title = "ImageDetails";
+}
+
+@section scripts
+{
+    <script type="text/javascript">
+    ImageGallery.Register("ImageDetailsPage", (function () {
+        var _imageDetailsPage = {};
+
+        _imageDetailsPage.Initialize = function () {
+            $.ajax({
+                type: "GET",
+                url: '/api/imagegallery/getimagedetails',
+                dataType: "json"
+            })
+            .done(function (file, status) {
+                $('.js-container-file_info').html($('.js-container-file_info_template').html()
+                    .replace('__FILENAME__', file.FileName)
+                    .replace('__FILESIZE__', file.FileSize)
+                    .replace('__COLOURDEPTH__', file.ColourDepth)
+                    .replace('__IMAGEFORMAT__', file.Format)
+                    .replace('__WIDTH__', file.Width)
+                    .replace('__HEIGHT__', file.Height)
+                );
+            });
+        }
+
+
+        return _imageDetailsPage;
+    })());
+
+    $(document).ready(function () {
+        ImageGallery.ImageDetailsPage.Initialize();
+    });
+    </script>
+}
+
+<h2>ImageDetails</h2>
+
+<div class="js-container-file_info"></div>
+
+<div class="js-container-file_info_template hidden">
+    <br />
+    <img src="/uploads/__FILENAME__" />
+    <br />
+    <strong>File Attributes</strong><br />
+    <br />
+    File Size: __FILESIZE__ bytes<br />
+    Colour Depth: __COLOURDEPTH__<br />
+    Image Format: __IMAGEFORMAT__<br />
+    Width: __WIDTH__<br />
+    Height: __HEIGHT__<br />
+    <br />
+</div>

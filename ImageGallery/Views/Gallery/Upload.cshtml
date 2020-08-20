@@ -1,0 +1,69 @@
+﻿@{
+    ViewBag.Title = "Upload";
+}
+
+@section scripts
+{
+<script type="text/javascript">
+    ImageGallery.Register("GalleryUploadPage", (function (){
+        var _galleryUploadPage = {};
+
+        _galleryUploadPage.Initialize = function(){
+            $('.js-button-file_upload').click(ImageGallery.GalleryUploadPage.FileUpload);
+        }
+
+        _galleryUploadPage.FileUpload = function(){
+            var data = new FormData();
+            var files = $(".js-input-file_upload").get(0).files;
+
+            if (files.length > 0) {
+                data.append("UploadedFile", files[0]);
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/api/fileupload/uploadfile",
+                contentType: false,
+                processData: false,
+                data: data
+            })
+            .done(function (file, status) {
+                $('.js-container-file_info').html('<br /><strong>SUCCESS!</strong><br />' + $('.js-container-file_info_template').html()
+                    .replace('__FILESIZE__', file.FileSize)
+                    .replace('__COLOURDEPTH__', file.ColourDepth)
+                    .replace('__IMAGEFORMAT__', file.Format)
+                    .replace('__WIDTH__', file.Width)
+                    .replace('__HEIGHT__', file.Height)
+                );
+            });
+        }
+
+        return _galleryUploadPage;
+    })());
+
+    $(document).ready(function () {
+        ImageGallery.GalleryUploadPage.Initialize();
+    });
+</script>
+}
+<h2>Upload</h2>
+
+<div class="container-file_upload">
+    <label for="input-file_upload">Select File to Upload:</label>
+    <input id="input-file_upload" class="js-input-file_upload" type="file" />
+    <input class="js-button-file_upload" type="button" value="Upload File" />
+</div>
+<div class="js-container-file_info">
+
+</div>
+<div class="js-container-file_info_template hidden">
+    <br />
+    <strong>File Attributes</strong><br />
+    <br />
+    File Size: __FILESIZE__ bytes<br />
+    Colour Depth: __COLOURDEPTH__<br />
+    Image Format: __IMAGEFORMAT__<br />
+    Width: __WIDTH__<br />
+    Height: __HEIGHT__<br />
+    <br />
+</div>
